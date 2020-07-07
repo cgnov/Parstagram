@@ -7,4 +7,8 @@
     <string name="take_picture">Take Picture</string>
     <string name="post">Post</string>
     <string name="post_image_preview">Preview of post\'s image</string>
+    <string name="home">Home</string>
+    <string name="compose">Compose</string>
+    <string name="profile">Profile</string>
+    <string name="post_picture">Post picture</string>
 </resources>

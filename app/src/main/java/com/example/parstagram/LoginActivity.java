@@ -15,6 +15,7 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 
 public class LoginActivity extends AppCompatActivity {
+
     public static final String TAG = "LoginActivity";
 
     private EditText etUsername;
