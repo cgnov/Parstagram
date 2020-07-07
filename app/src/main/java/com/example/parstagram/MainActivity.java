@@ -18,7 +18,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -59,8 +61,12 @@ public class MainActivity extends AppCompatActivity {
         btnPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ParseUser currentUser = ParseUser.getCurrentUser();
-                savePost(etCaption.getText().toString(), currentUser);
+                if(photoFile == null || ivPreview.getDrawable() == null) {
+                    Toast.makeText(MainActivity.this, "Need a picture in order to post", Toast.LENGTH_SHORT).show();
+                } else { // Have a photo, proceed with posting
+                    ParseUser currentUser = ParseUser.getCurrentUser();
+                    savePost(etCaption.getText().toString(), currentUser, photoFile);
+                }
             }
         });
 
@@ -84,10 +90,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void savePost(String caption, ParseUser currentUser) {
+    private void savePost(String caption, ParseUser currentUser, final File photoFile) {
         Post post = new Post();
         post.setCaption(caption);
-//        TODO: add in post.setImage()
+        post.setImage(new ParseFile(photoFile));
         post.setUser(currentUser);
         post.saveInBackground(new SaveCallback() {
             @Override
@@ -98,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Log.i(TAG, "Saving post was successful");
                     etCaption.setText("");
+                    ivPreview.setImageResource(0);
                 }
             }
         });
@@ -146,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
                 Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                 // RESIZE BITMAP, see section below
                 // Load the taken image into a preview
-                ImageView ivPreview = (ImageView) findViewById(R.id.ivPreview);
                 ivPreview.setImageBitmap(takenImage);
             } else { // Result was a failure
                 Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
