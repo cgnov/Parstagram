@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.example.parstagram.fragments.ComposeFragment;
 import com.example.parstagram.fragments.HomeFragment;
 import com.example.parstagram.fragments.ProfileFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.FindCallback;
 import com.parse.Parse;
@@ -42,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
     private FrameLayout flContainer;
     private BottomNavigationView bNavigation;
+    private MenuItem miHome;
+    private MenuItem miCompose;
+    private MenuItem miProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,20 +56,29 @@ public class MainActivity extends AppCompatActivity {
 
         flContainer = findViewById(R.id.flContainer);
         bNavigation = findViewById(R.id.bNavigation);
+        miHome = bNavigation.getMenu().findItem(R.id.action_home);
+        miCompose = bNavigation.getMenu().findItem(R.id.action_compose);
+        miProfile = bNavigation.getMenu().findItem(R.id.action_profile);
 
         bNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                miHome.setIcon(R.drawable.instagram_home_outline_24);
+                miCompose.setIcon(R.drawable.instagram_new_post_outline_24);
+                miProfile.setIcon(R.drawable.instagram_user_outline_24);
                 Fragment fragment;
                 switch (item.getItemId()) {
                     case R.id.action_home:
+                        item.setIcon(R.drawable.instagram_home_filled_24);
                         fragment = new HomeFragment();
                         break;
                     case R.id.action_compose:
+                        item.setIcon(R.drawable.instagram_new_post_filled_24);
                         fragment = new ComposeFragment();
                         break;
                     case R.id.action_profile:
                     default:
+                        item.setIcon(R.drawable.instagram_user_filled_24);
                         fragment = new ProfileFragment();
                         break;
                 }
