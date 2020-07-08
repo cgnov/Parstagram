@@ -52,20 +52,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final FragmentManager fragmentManager = getSupportFragmentManager();
-
         flContainer = findViewById(R.id.flContainer);
         bNavigation = findViewById(R.id.bNavigation);
         miHome = bNavigation.getMenu().findItem(R.id.action_home);
         miCompose = bNavigation.getMenu().findItem(R.id.action_compose);
         miProfile = bNavigation.getMenu().findItem(R.id.action_profile);
 
+        setUpNavigationSelectedListeners(bNavigation);
+        bNavigation.setSelectedItemId(R.id.action_home);
+    }
+
+    private void setUpNavigationSelectedListeners(BottomNavigationView bNavigation) {
+        final FragmentManager fragmentManager = getSupportFragmentManager();
         bNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                // Reset icons to unclicked version
                 miHome.setIcon(R.drawable.instagram_home_outline_24);
                 miCompose.setIcon(R.drawable.instagram_new_post_outline_24);
                 miProfile.setIcon(R.drawable.instagram_user_outline_24);
+
+                // Check which item was clicked, change icon and start fragment
                 Fragment fragment;
                 switch (item.getItemId()) {
                     case R.id.action_home:
@@ -86,7 +93,12 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
 
-        bNavigation.setSelectedItemId(R.id.action_home);
+    public void onLogOutButtonClicked(MenuItem mi) {
+        ParseUser.logOut();
+        Intent i = new Intent(this, LoginActivity.class);
+        startActivity(i);
+        finish();
     }
 }

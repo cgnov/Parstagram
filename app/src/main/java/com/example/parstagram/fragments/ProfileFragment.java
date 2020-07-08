@@ -3,6 +3,7 @@ package com.example.parstagram.fragments;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -32,8 +33,10 @@ public class ProfileFragment extends HomeFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar)view.findViewById(R.id.tbProfile));
-        ((AppCompatActivity)getActivity()).setTitle(ParseUser.getCurrentUser().getUsername());
+//        ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar)view.findViewById(R.id.tbProfile));
+//        ((AppCompatActivity)getActivity()).setTitle(ParseUser.getCurrentUser().getUsername());
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.tbProfile);
+        toolbar.setTitle(ParseUser.getCurrentUser().getUsername());
     }
 
     @Override

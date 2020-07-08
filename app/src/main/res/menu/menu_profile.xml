@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:title="Log Out"
-        app:showAsAction="always" />
+        android:title="@string/log_out"
+        android:onClick="onLogOutButtonClicked"
+        app:showAsAction="ifRoom" />
 </menu>
