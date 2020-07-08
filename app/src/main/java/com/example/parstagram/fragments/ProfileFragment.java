@@ -41,10 +41,11 @@ public class ProfileFragment extends HomeFragment {
     }
 
     @Override
-    protected void queryPosts() {
+    protected void queryPosts(final int page) {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
         query.setLimit(20);
+//        query.setSkip(page);
         query.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser());
         query.addDescendingOrder(Post.KEY_CREATED);
         query.findInBackground(new FindCallback<Post>() {

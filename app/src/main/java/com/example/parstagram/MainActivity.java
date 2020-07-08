@@ -41,7 +41,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
-    private FrameLayout flContainer;
     private BottomNavigationView bNavigation;
     private MenuItem miHome;
     private MenuItem miCompose;
@@ -52,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        flContainer = findViewById(R.id.flContainer);
         bNavigation = findViewById(R.id.bNavigation);
         miHome = bNavigation.getMenu().findItem(R.id.action_home);
         miCompose = bNavigation.getMenu().findItem(R.id.action_compose);

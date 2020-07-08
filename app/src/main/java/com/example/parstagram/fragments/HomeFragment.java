@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.parstagram.EndlessRecyclerViewScrollListener;
 import com.example.parstagram.Post;
 import com.example.parstagram.PostsAdapter;
 import com.example.parstagram.R;
@@ -27,6 +28,7 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     public static final String TAG = "HomeFragment";
+    private EndlessRecyclerViewScrollListener mScrollListener;
     private RecyclerView rvPosts;
     private SwipeRefreshLayout mSwipeContainer;
     protected PostsAdapter adapter;
@@ -50,27 +52,40 @@ public class HomeFragment extends Fragment {
 
         // Set up RecyclerView
         rvPosts = view.findViewById(R.id.rvPosts);
-        rvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        rvPosts.setLayoutManager(linearLayoutManager);
         allPosts = new ArrayList<>();
         adapter = new PostsAdapter(getContext(), allPosts);
         rvPosts.setAdapter(adapter);
+
+        // Set up endless scroll listener
+        mScrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                queryPosts(page);
+            }
+        };
+        rvPosts.addOnScrollListener(mScrollListener);
 
         mSwipeContainer = view.findViewById(R.id.swipeContainer);
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                queryPosts();
+                adapter.clear();
+                queryPosts(0);
             }
         });
 
-        queryPosts();
+        queryPosts(0);
     }
 
-    protected void queryPosts() {
-        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+    protected void queryPosts(final int offset) {
+        final ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
-        query.setLimit(20);
         query.addDescendingOrder(Post.KEY_CREATED);
+        query.setLimit(3);
+        query.setSkip(offset*query.getLimit());
+        Log.i(TAG, String.valueOf(offset));
         query.findInBackground(new FindCallback<Post>() {
             @Override
             public void done(List<Post> posts, ParseException e) {
@@ -78,7 +93,6 @@ public class HomeFragment extends Fragment {
                     Log.e(TAG, "Issue with getting posts", e);
                 } else {
                     // Posts have been successfully queried, clear out old posts and replace
-                    adapter.clear();
                     adapter.addAll(posts);
                     mSwipeContainer.setRefreshing(false);
                 }
