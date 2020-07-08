@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ public class HomeFragment extends Fragment {
 
     public static final String TAG = "HomeFragment";
     private RecyclerView rvPosts;
+    private SwipeRefreshLayout mSwipeContainer;
     protected PostsAdapter adapter;
     protected List<Post> allPosts;
 
@@ -46,23 +48,20 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Set up RecyclerView
         rvPosts = view.findViewById(R.id.rvPosts);
-
-        // create layout for single row
-        // create adapter
-        // create data source
-        // set adapter on rv
-        // set layout manager on rv
-
-        // create layout for single row
-        // create adapter
+        rvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
         allPosts = new ArrayList<>();
         adapter = new PostsAdapter(getContext(), allPosts);
-        // create data source
-        // set adapter on rv
         rvPosts.setAdapter(adapter);
-        // set layout manager on rv
-        rvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        mSwipeContainer = view.findViewById(R.id.swipeContainer);
+        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                queryPosts();
+            }
+        });
 
         queryPosts();
     }
@@ -78,9 +77,10 @@ public class HomeFragment extends Fragment {
                 if (e != null) {
                     Log.e(TAG, "Issue with getting posts", e);
                 } else {
-                    // Posts have been successfully queried, add and notify adapter
-                    allPosts.addAll(posts);
-                    adapter.notifyDataSetChanged();
+                    // Posts have been successfully queried, clear out old posts and replace
+                    adapter.clear();
+                    adapter.addAll(posts);
+                    mSwipeContainer.setRefreshing(false);
                 }
             }
         });

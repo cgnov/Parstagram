@@ -1,10 +1,11 @@
 package com.example.parstagram;
 
-import com.parse.Parse;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
+
+import java.util.Date;
 
 @ParseClassName("Post")
 public class Post extends ParseObject {
@@ -34,8 +35,5 @@ public class Post extends ParseObject {
         return getParseUser(KEY_USER);
     }
 
-    public void setUser(ParseUser user) {
-        put(KEY_USER, user);
-    }
-
+    public void setUser(ParseUser user) { put(KEY_USER, user); }
 }
