@@ -14,12 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.parstagram.databinding.ItemPostBinding;
 import com.example.parstagram.fragments.HomeFragment;
+import com.parse.ParseFile;
 
 import java.util.List;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder>{
 
     public static final String POST = "post";
+    public static final String PROFILE_PIC = "profilePicture";
 
     private Context context;
     private List<Post> posts;
@@ -64,6 +66,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder>{
         private TextView tvUsername;
         private ImageView ivPostPic;
         private TextView tvCaption;
+        private ImageView ivUserPic;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -71,11 +74,18 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder>{
             tvUsername = itemView.findViewById(R.id.tvUsername);
             ivPostPic = itemView.findViewById(R.id.ivPostPic);
             tvCaption = itemView.findViewById(R.id.tvCaption);
+            ivUserPic = itemView.findViewById(R.id.ivUserPic);
         }
 
         public void bind(final Post post) {
             tvUsername.setText(post.getUser().getUsername());
             tvCaption.setText(post.getCaption());
+            ParseFile profilePicture = post.getUser().getParseFile(PROFILE_PIC);
+            if(profilePicture == null) {
+                Glide.with(context).load(R.drawable.instagram_user_filled_24).circleCrop().into(ivUserPic);
+            } else {
+                Glide.with(context).load(profilePicture.getUrl()).circleCrop().into(ivUserPic);
+            }
             Glide.with(context).load(post.getImage().getUrl()).into(ivPostPic);
             ivPostPic.setOnClickListener(new View.OnClickListener() {
                 @Override

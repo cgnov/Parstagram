@@ -3,17 +3,16 @@ package com.example.parstagram.fragments;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.parstagram.Post;
 import com.example.parstagram.R;
+import com.example.parstagram.databinding.FragmentProfileBinding;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -22,20 +21,22 @@ import com.parse.ParseUser;
 import java.util.List;
 
 public class ProfileFragment extends HomeFragment {
+    private FragmentProfileBinding mBinding;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        mBinding = FragmentProfileBinding.inflate(getLayoutInflater(), container, false);
+//        return inflater.inflate(R.layout.fragment_profile, container, false);
+        return mBinding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar)view.findViewById(R.id.tbProfile));
-//        ((AppCompatActivity)getActivity()).setTitle(ParseUser.getCurrentUser().getUsername());
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.tbProfile);
+        Toolbar toolbar = (Toolbar) mBinding.tbProfile;
         toolbar.setTitle(ParseUser.getCurrentUser().getUsername());
     }
 
@@ -52,11 +53,17 @@ public class ProfileFragment extends HomeFragment {
                 if (e != null) {
                     Log.e(TAG, "Issue with getting posts", e);
                 } else {
-                    // Posts have been successfully queried, add and notify adapter
-                    allPosts.addAll(posts);
-                    adapter.notifyDataSetChanged();
+                    // Posts have been successfully queried, clear out old posts and replace
+                    adapter.clear();
+                    adapter.addAll(posts);
+                    mBinding.swipeContainer.setRefreshing(false);
                 }
             }
         });
+    }
+
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        mBinding = null;
     }
 }
