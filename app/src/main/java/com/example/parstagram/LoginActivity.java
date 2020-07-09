@@ -35,10 +35,8 @@ public class LoginActivity extends AppCompatActivity {
     public void logInUser(View view) {
         if(mBinding.btnSignup.getVisibility()==View.VISIBLE) {
             // User wants to log in. Display relevant buttons and hide signup button
-            mBinding.btnCancel.setVisibility(View.GONE);
-            mBinding.btnCancel.setVisibility(View.VISIBLE);
-            mBinding.etPassword.setVisibility(View.VISIBLE);
-            mBinding.btnCancel.setVisibility(View.VISIBLE);
+            showCredentials(true);
+            mBinding.btnSignup.setVisibility(View.GONE);
         } else {
             // Get login credentials
             final String username = mBinding.etUsername.getText().toString();
@@ -71,12 +69,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void signUpUser(View view) {
-        if(mBinding.btnCancel.getVisibility()==View.VISIBLE) {
+        if(mBinding.btnLogin.getVisibility()==View.VISIBLE) {
             // User wants to create new account. Display relevant buttons and hide login
+            showCredentials(true);
             mBinding.btnLogin.setVisibility(View.GONE);
-            mBinding.etPassword.setVisibility(View.VISIBLE);
-            mBinding.btnCancel.setVisibility(View.VISIBLE);
-            mBinding.etPassword.setVisibility(View.VISIBLE);
         } else {
             // Get info for new account
             final String username = mBinding.btnCancel.getText().toString();
@@ -104,12 +100,18 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    // Hide username/password and show login/signup buttons
     public void cancelLoginSignup(View view) {
-        mBinding.btnCancel.setVisibility(View.VISIBLE);
+        showCredentials(false);
         mBinding.btnLogin.setVisibility(View.VISIBLE);
-        mBinding.etPassword.setVisibility(View.GONE);
-        mBinding.btnCancel.setVisibility(View.GONE);
-        mBinding.etPassword.setVisibility(View.GONE);
+        mBinding.btnSignup.setVisibility(View.VISIBLE);
+    }
+
+    private void showCredentials(boolean show) {
+        int visibility = show ? View.VISIBLE : View.GONE;
+        mBinding.etUsername.setVisibility(visibility);
+        mBinding.etPassword.setVisibility(visibility);
+        mBinding.btnCancel.setVisibility(visibility);
     }
 
     private void goMainActivity() {

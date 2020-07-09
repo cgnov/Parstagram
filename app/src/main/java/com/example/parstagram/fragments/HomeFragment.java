@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,9 +19,13 @@ import com.example.parstagram.EndlessRecyclerViewScrollListener;
 import com.example.parstagram.Post;
 import com.example.parstagram.PostsAdapter;
 import com.example.parstagram.R;
+import com.example.parstagram.databinding.FragmentHomeBinding;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +33,18 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     public static final String TAG = "HomeFragment";
+    private static final String HOME = "Home";
+    private final boolean IS_PROFILE;
+    private final int NUM_REQUEST = 20;
     private EndlessRecyclerViewScrollListener mScrollListener;
-    private RecyclerView rvPosts;
+    private FragmentHomeBinding mHomeBinding;
     private SwipeRefreshLayout mSwipeContainer;
-    protected PostsAdapter adapter;
-    protected List<Post> allPosts;
+    private PostsAdapter mAdapter;
+    private List<Post> mAllPosts;
+
+    public HomeFragment(boolean isProfile) {
+        IS_PROFILE = isProfile;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,10 +52,11 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        // Set up viewbinding
+        mHomeBinding = FragmentHomeBinding.inflate(getLayoutInflater(), container, false);
+        return mHomeBinding.getRoot();
     }
 
     @Override
@@ -51,12 +64,11 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Set up RecyclerView
-        rvPosts = view.findViewById(R.id.rvPosts);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        rvPosts.setLayoutManager(linearLayoutManager);
-        allPosts = new ArrayList<>();
-        adapter = new PostsAdapter(getContext(), allPosts);
-        rvPosts.setAdapter(adapter);
+        mHomeBinding.rvPosts.setLayoutManager(linearLayoutManager);
+        mAllPosts = new ArrayList<>();
+        mAdapter = new PostsAdapter(getContext(), mAllPosts);
+        mHomeBinding.rvPosts.setAdapter(mAdapter);
 
         // Set up endless scroll listener
         mScrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
@@ -65,27 +77,36 @@ public class HomeFragment extends Fragment {
                 queryPosts(page);
             }
         };
-        rvPosts.addOnScrollListener(mScrollListener);
+        mHomeBinding.rvPosts.addOnScrollListener(mScrollListener);
 
         mSwipeContainer = view.findViewById(R.id.swipeContainer);
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                adapter.clear();
-                queryPosts(0);
+                mAdapter.clear();
+                queryPosts();
             }
         });
 
+        queryPosts();
+
+        updateToolbar();
+    }
+
+    // Calling query posts for first time or refreshing. Don't skip posts
+    private void queryPosts() {
         queryPosts(0);
     }
 
-    protected void queryPosts(final int offset) {
+    protected void queryPosts(final int page) {
         final ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
         query.addDescendingOrder(Post.KEY_CREATED);
-        query.setLimit(3);
-        query.setSkip(offset*query.getLimit());
-        Log.i(TAG, String.valueOf(offset));
+        query.setLimit(NUM_REQUEST);
+        query.setSkip(page*query.getLimit());
+        if (IS_PROFILE) {
+            query.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser());
+        }
         query.findInBackground(new FindCallback<Post>() {
             @Override
             public void done(List<Post> posts, ParseException e) {
@@ -93,10 +114,20 @@ public class HomeFragment extends Fragment {
                     Log.e(TAG, "Issue with getting posts", e);
                 } else {
                     // Posts have been successfully queried, clear out old posts and replace
-                    adapter.addAll(posts);
+                    mAdapter.addAll(posts);
                     mSwipeContainer.setRefreshing(false);
                 }
             }
         });
+    }
+
+    protected void updateToolbar() {
+        Toolbar toolbar = (Toolbar) mHomeBinding.tbProfile;
+        if(IS_PROFILE) {
+            toolbar.setTitle(ParseUser.getCurrentUser().getUsername());
+        } else {
+            toolbar.setTitle(HOME);
+        }
+
     }
 }

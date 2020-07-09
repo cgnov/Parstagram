@@ -84,9 +84,9 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder>{
             if(profilePicture == null) {
                 Glide.with(context).load(R.drawable.instagram_user_filled_24).circleCrop().into(ivUserPic);
             } else {
-                Glide.with(context).load(profilePicture.getUrl()).circleCrop().into(ivUserPic);
+                Glide.with(context).load(profilePicture.getUrl()).circleCrop().placeholder(R.drawable.instagram_user_filled_24).into(ivUserPic);
             }
-            Glide.with(context).load(post.getImage().getUrl()).into(ivPostPic);
+            Glide.with(context).load(post.getImage().getUrl()).placeholder(R.color.colorPlaceholder).into(ivPostPic);
             ivPostPic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
