@@ -18,7 +18,6 @@ import com.parse.ParseUser;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
-    private BottomNavigationView bNavigation;
     private MenuItem miHome;
     private MenuItem miCompose;
     private MenuItem miProfile;
@@ -28,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        bNavigation = findViewById(R.id.bNavigation);
+        BottomNavigationView bNavigation = findViewById(R.id.bNavigation);
         miHome = bNavigation.getMenu().findItem(R.id.action_home);
         miCompose = bNavigation.getMenu().findItem(R.id.action_compose);
         miProfile = bNavigation.getMenu().findItem(R.id.action_profile);

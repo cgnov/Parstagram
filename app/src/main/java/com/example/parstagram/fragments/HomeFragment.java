@@ -36,11 +36,9 @@ public class HomeFragment extends Fragment {
     private static final String HOME = "Home";
     private final boolean IS_PROFILE;
     private final int NUM_REQUEST = 20;
-    private EndlessRecyclerViewScrollListener mScrollListener;
     private FragmentHomeBinding mHomeBinding;
     private SwipeRefreshLayout mSwipeContainer;
     private PostsAdapter mAdapter;
-    private List<Post> mAllPosts;
 
     public HomeFragment(boolean isProfile) {
         IS_PROFILE = isProfile;
@@ -66,18 +64,18 @@ public class HomeFragment extends Fragment {
         // Set up RecyclerView
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mHomeBinding.rvPosts.setLayoutManager(linearLayoutManager);
-        mAllPosts = new ArrayList<>();
-        mAdapter = new PostsAdapter(getContext(), mAllPosts);
+        List<Post> allPosts = new ArrayList<>();
+        mAdapter = new PostsAdapter(getContext(), allPosts);
         mHomeBinding.rvPosts.setAdapter(mAdapter);
 
         // Set up endless scroll listener
-        mScrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+        EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 queryPosts(page);
             }
         };
-        mHomeBinding.rvPosts.addOnScrollListener(mScrollListener);
+        mHomeBinding.rvPosts.addOnScrollListener(scrollListener);
 
         mSwipeContainer = view.findViewById(R.id.swipeContainer);
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

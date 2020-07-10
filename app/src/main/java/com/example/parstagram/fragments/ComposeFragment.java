@@ -31,16 +31,19 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
+import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 
 public class ComposeFragment extends Fragment {
 
     public static final String TAG = "ComposeFragment";
-    public final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
+    private final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
+    private final static int NO_PICTURE = 0;
     private FragmentComposeBinding mBinding;
-    public String mPhotoFileName = "photo.jpg";
     private File mPhotoFile;
 
     @Override
@@ -49,7 +52,7 @@ public class ComposeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Set up view binding
         mBinding = FragmentComposeBinding.inflate(getLayoutInflater(), container, false);
@@ -94,7 +97,7 @@ public class ComposeFragment extends Fragment {
                 } else {
                     Log.i(TAG, "Saving post was successful");
                     mBinding.etCaption.setText("");
-                    mBinding.ivPreview.setImageResource(0);
+                    mBinding.ivPreview.setImageResource(NO_PICTURE);
                 }
             }
         });
@@ -104,11 +107,12 @@ public class ComposeFragment extends Fragment {
         // create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Create a File reference for future access
+        String mPhotoFileName = "photo.jpg";
         mPhotoFile = getPhotoFileUri(mPhotoFileName);
 
         // wrap File object into a content provider (required for API >= 24)
         // See https://guides.codepath.com/android/Sharing-Content-with-Intents#sharing-files-with-api-24-or-higher
-        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.codepath.fileprovider", mPhotoFile);
+        Uri fileProvider = FileProvider.getUriForFile(Objects.requireNonNull(getContext()), "com.codepath.fileprovider", mPhotoFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
         // Ensures that there is a valid camera on the phone (prevents crash from lack of camera)
@@ -123,7 +127,7 @@ public class ComposeFragment extends Fragment {
         // Get safe storage directory for photos
         // Use `getExternalFilesDir` on Context to access package-specific directories.
         // This way, we don't need to request external read/write runtime permissions.
-        File mediaStorageDir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
+        File mediaStorageDir = new File(Objects.requireNonNull(getContext()).getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
 
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
