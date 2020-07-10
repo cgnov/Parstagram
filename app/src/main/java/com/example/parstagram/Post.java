@@ -31,28 +31,18 @@ public class Post extends ParseObject {
     public static final String KEY_USER = "user";
     public static final String KEY_CREATED = "createdAt";
 
-    public String getCaption() {
-        return getString(KEY_CAPTION);
-    }
+    public String getCaption() { return getString(KEY_CAPTION); }
 
-    public void setCaption(String caption) {
-        put(KEY_CAPTION, caption);
-    }
+    public void setCaption(String caption) { put(KEY_CAPTION, caption); }
 
-    public ParseFile getImage() {
-        return getParseFile(KEY_IMAGE);
-    }
+    public ParseFile getImage() { return getParseFile(KEY_IMAGE); }
 
-    public void setImage(ParseFile image) {
-        put(KEY_IMAGE, image);
-    }
+    public void setImage(ParseFile image) { put(KEY_IMAGE, image); }
 
-    public ParseUser getUser() {
-        return getParseUser(KEY_USER);
-    }
+    public ParseUser getUser() { return getParseUser(KEY_USER); }
 
     public void setUser(ParseUser user) { put(KEY_USER, user); }
-    
+
     public static void displayPost(final Post post, ItemPostBinding binding, Context context) {
         binding.tvUsername.setText(post.getUser().getUsername());
         if(post.getCaption().isEmpty()) {

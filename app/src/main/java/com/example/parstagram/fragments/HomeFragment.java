@@ -141,10 +141,11 @@ public class HomeFragment extends Fragment {
 
     protected void updateToolbar() {
         Toolbar toolbar = (Toolbar) mHomeBinding.tbProfile;
+        toolbar.findViewById(R.id.logOutButton).setVisibility(View.GONE);
         if(IS_PROFILE) {
             toolbar.setTitle(USER.getUsername());
-            if(!USER.getUsername().equals(ParseUser.getCurrentUser().getUsername())) {
-                toolbar.findViewById(R.id.logOutButton).setVisibility(View.GONE);
+            if(USER.getUsername().equals(ParseUser.getCurrentUser().getUsername())) {
+                toolbar.findViewById(R.id.logOutButton).setVisibility(View.VISIBLE);
             }
         } else {
             toolbar.setTitle(HOME);
