@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.parstagram.databinding.ItemPostBinding;
-import com.parse.ParseFile;
 
 import java.util.List;
 
@@ -19,42 +18,43 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder>{
 
     public static final String POST = "post";
     public static final String PROFILE_PIC = "profilePicture";
+    private final boolean IS_PROFILE;
+    private Context mContext;
+    private List<Post> mPosts;
 
-    private Context context;
-    private List<Post> posts;
-
-    public PostsAdapter(Context context, List<Post> posts) {
-        this.context = context;
-        this.posts = posts;
+    public PostsAdapter(Context context, List<Post> posts, boolean isProfile) {
+        mContext = context;
+        mPosts = posts;
+        IS_PROFILE = isProfile;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_post, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_post, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Post post = posts.get(position);
+        Post post = mPosts.get(position);
         holder.bind(post);
     }
 
     @Override
     public int getItemCount() {
-        return posts.size();
+        return mPosts.size();
     }
 
     // Clean all elements of the recycler (used for SwipeRefresh)
     public void clear() {
-        posts.clear();
+        mPosts.clear();
         notifyDataSetChanged();
     }
 
     // Add list of posts (used for SwipeRefresh)
     public void addAll(List<Post> list) {
-        posts.addAll(list);
+        mPosts.addAll(list);
         notifyDataSetChanged();
     }
 
@@ -67,34 +67,36 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder>{
         }
 
         public void bind(final Post post) {
-            mBinding.tvUsername.setText(post.getUser().getUsername());
-            mBinding.tvCaption.setText(post.getCaption());
-
-            // Display user-uploaded avatar or default avatar
-            ParseFile profilePicture = post.getUser().getParseFile(PROFILE_PIC);
-            if(profilePicture == null) {
-                mBinding.ivUserPic.setImageResource(R.drawable.instagram_user_filled_24);
+            if(IS_PROFILE) {
+                profileBind(post);
             } else {
-                Glide.with(context)
-                        .load(profilePicture.getUrl())
-                        .circleCrop()
-                        .placeholder(R.drawable.instagram_user_filled_24)
-                        .into(mBinding.ivUserPic);
+                Post.displayPost(post, mBinding, mContext);
             }
 
-            // Display post image and display only that post when image is clicked
-            Glide.with(context)
-                    .load(post.getImage().getUrl())
-                    .placeholder(R.color.colorPlaceholder)
-                    .into(mBinding.ivPostPic);
+            // Opens PostDetailsActivity of relevant post when picture is clkced
             mBinding.ivPostPic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent i = new Intent(context, PostDetailsActivity.class);
+                    Intent i = new Intent(mContext, PostDetailsActivity.class);
                     i.putExtra(POST, post);
-                    context.startActivity(i);
+                    mContext.startActivity(i);
                 }
             });
         }
+
+        private void profileBind(Post post) {
+            // Simple square grid view, hide everything except post picture
+            mBinding.ivUserPic.setVisibility(View.GONE);
+            mBinding.tvCaption.setVisibility(View.GONE);
+            mBinding.tvUsername.setVisibility(View.GONE);
+            mBinding.tvTimestamp.setVisibility(View.GONE);
+
+            Glide.with(mContext)
+                    .load(post.getImage().getUrl())
+                    .centerCrop() // center crops into square
+                    .placeholder(R.color.colorPlaceholder)
+                    .into(mBinding.ivPostPic);
+        }
+
     }
 }

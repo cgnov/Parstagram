@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -34,7 +35,7 @@ public class HomeFragment extends Fragment {
 
     public static final String TAG = "HomeFragment";
     private static final String HOME = "Home";
-    private final boolean IS_PROFILE;
+    public final boolean IS_PROFILE;
     private final int NUM_REQUEST = 20;
     private FragmentHomeBinding mHomeBinding;
     private SwipeRefreshLayout mSwipeContainer;
@@ -62,19 +63,33 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Set up RecyclerView
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        mHomeBinding.rvPosts.setLayoutManager(linearLayoutManager);
+        RecyclerView.LayoutManager layoutManager;
+        EndlessRecyclerViewScrollListener scrollListener;
+        if(IS_PROFILE) {
+            // Displaying profile, want grid layout
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 3);
+            mHomeBinding.rvPosts.setLayoutManager(gridLayoutManager);
+            scrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    queryPosts(page);
+                }
+            };
+        } else {
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+            mHomeBinding.rvPosts.setLayoutManager(linearLayoutManager);
+            scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    queryPosts(page);
+                }
+            };
+        }
         List<Post> allPosts = new ArrayList<>();
-        mAdapter = new PostsAdapter(getContext(), allPosts);
+        mAdapter = new PostsAdapter(getContext(), allPosts, IS_PROFILE);
         mHomeBinding.rvPosts.setAdapter(mAdapter);
 
         // Set up endless scroll listener
-        EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                queryPosts(page);
-            }
-        };
         mHomeBinding.rvPosts.addOnScrollListener(scrollListener);
 
         mSwipeContainer = view.findViewById(R.id.swipeContainer);
