@@ -2,7 +2,7 @@
 
 **Parstagram** is a photo sharing app using Parse as its backend.
 
-Time spent: **13** hours spent in total
+Time spent: **14** hours spent in total
 
 ## User Stories
 
@@ -28,25 +28,26 @@ The following **stretch** features are implemented:
 - User Profiles:
   - [ ] Allow the logged in user to add a profile photo
   - [x] Display the profile photo with each post
-  - [ ] Tapping on a post's username or profile photo goes to that user's profile page
+  - [x] Tapping on a post's username or profile photo goes to that user's profile page
   - [x] User Profile shows posts in a grid view
 - [ ] User can comment on a post and see all comments for each post in the post details screen.
 - [ ] User can like a post and see number of likes for each post in the post details screen.
 
 The following **additional** features are implemented:
 
-- [ ] List anything else that you can get done to improve the app functionality!
+- [x] View binding
+- [x] Allow user to backtrace through their post/profile clicks
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
 
-1.
-2.
+1. How people implemented likes and comments and what column type they used in Parse for that.
+2. How to style the grid layout.
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='Parstagram.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
@@ -60,6 +61,7 @@ List an 3rd party libraries, icons, graphics, or other assets you used in your a
 ## Notes
 
 Describe any challenges encountered while building the app.
+This was my first time using Fragments, so I was wrapping my head around the concept as I went. I spent a fair amount of time restructuring the code after I figured out how it worked and there was a better way of doing things, but it was straight-forward otherwise.
 
 ## License
 
