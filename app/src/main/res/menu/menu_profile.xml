@@ -13,5 +13,6 @@
     <item
         android:title="@string/log_out"
         android:onClick="onLogOutButtonClicked"
+        android:id="@+id/logOutButton"
         app:showAsAction="ifRoom" />
 </menu>

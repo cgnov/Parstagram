@@ -4,8 +4,12 @@ import android.content.Context;
 import android.text.Html;
 import android.view.View;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+
 import com.bumptech.glide.Glide;
 import com.example.parstagram.databinding.ItemPostBinding;
+import com.example.parstagram.fragments.HomeFragment;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -21,6 +25,7 @@ import static com.example.parstagram.PostsAdapter.PROFILE_PIC;
 @ParseClassName("Post")
 public class Post extends ParseObject {
 
+    public static final String TAG = "Post";
     public static final String KEY_CAPTION = "caption";
     public static final String KEY_IMAGE = "image";
     public static final String KEY_USER = "user";
@@ -48,7 +53,7 @@ public class Post extends ParseObject {
 
     public void setUser(ParseUser user) { put(KEY_USER, user); }
     
-    public static void displayPost(Post post, ItemPostBinding binding, Context context) {
+    public static void displayPost(final Post post, ItemPostBinding binding, Context context) {
         binding.tvUsername.setText(post.getUser().getUsername());
         if(post.getCaption().isEmpty()) {
             binding.tvCaption.setVisibility(View.GONE);
@@ -68,6 +73,16 @@ public class Post extends ParseObject {
                     .placeholder(R.drawable.instagram_user_filled_24)
                     .into(binding.ivUserPic);
         }
+
+        final FragmentManager fragmentManager = ((FragmentActivity)context).getSupportFragmentManager();
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fragmentManager.beginTransaction().replace(R.id.flContainer, new HomeFragment(post.getUser())).addToBackStack(TAG).commit();
+            }
+        };
+        binding.tvUsername.setOnClickListener(onClickListener);
+        binding.ivUserPic.setOnClickListener(onClickListener);
 
         // Display post image in original proportions
         Glide.with(context)

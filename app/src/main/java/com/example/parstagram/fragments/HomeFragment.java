@@ -36,13 +36,19 @@ public class HomeFragment extends Fragment {
     public static final String TAG = "HomeFragment";
     private static final String HOME = "Home";
     public final boolean IS_PROFILE;
-    private final int NUM_REQUEST = 20;
+    public final int NUM_REQUEST = 20;
+    private final ParseUser USER;
     private FragmentHomeBinding mHomeBinding;
-    private SwipeRefreshLayout mSwipeContainer;
     private PostsAdapter mAdapter;
 
     public HomeFragment(boolean isProfile) {
         IS_PROFILE = isProfile;
+        USER = ParseUser.getCurrentUser();
+    }
+
+    public HomeFragment(ParseUser user) {
+        IS_PROFILE = true;
+        USER = user;
     }
 
     @Override
@@ -53,7 +59,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Set up viewbinding
+        // Set up view binding
         mHomeBinding = FragmentHomeBinding.inflate(getLayoutInflater(), container, false);
         return mHomeBinding.getRoot();
     }
@@ -92,8 +98,7 @@ public class HomeFragment extends Fragment {
         // Set up endless scroll listener
         mHomeBinding.rvPosts.addOnScrollListener(scrollListener);
 
-        mSwipeContainer = view.findViewById(R.id.swipeContainer);
-        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mHomeBinding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 mAdapter.clear();
@@ -118,7 +123,7 @@ public class HomeFragment extends Fragment {
         query.setLimit(NUM_REQUEST);
         query.setSkip(page*query.getLimit());
         if (IS_PROFILE) {
-            query.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser());
+            query.whereEqualTo(Post.KEY_USER, USER);
         }
         query.findInBackground(new FindCallback<Post>() {
             @Override
@@ -128,7 +133,7 @@ public class HomeFragment extends Fragment {
                 } else {
                     // Posts have been successfully queried, clear out old posts and replace
                     mAdapter.addAll(posts);
-                    mSwipeContainer.setRefreshing(false);
+                    mHomeBinding.swipeContainer.setRefreshing(false);
                 }
             }
         });
@@ -137,7 +142,10 @@ public class HomeFragment extends Fragment {
     protected void updateToolbar() {
         Toolbar toolbar = (Toolbar) mHomeBinding.tbProfile;
         if(IS_PROFILE) {
-            toolbar.setTitle(ParseUser.getCurrentUser().getUsername());
+            toolbar.setTitle(USER.getUsername());
+            if(!USER.getUsername().equals(ParseUser.getCurrentUser().getUsername())) {
+                toolbar.findViewById(R.id.logOutButton).setVisibility(View.GONE);
+            }
         } else {
             toolbar.setTitle(HOME);
         }

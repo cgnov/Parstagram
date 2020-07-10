@@ -1,21 +1,24 @@
 package com.example.parstagram;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.parstagram.databinding.ItemPostBinding;
+import com.example.parstagram.fragments.PostDetailsFragment;
 
 import java.util.List;
 
 public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder>{
 
+    public static final String TAG = "PostsAdapter";
     public static final String POST = "post";
     public static final String PROFILE_PIC = "profilePicture";
     private final boolean IS_PROFILE;
@@ -73,13 +76,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder>{
                 Post.displayPost(post, mBinding, mContext);
             }
 
-            // Opens PostDetailsActivity of relevant post when picture is clkced
+            final FragmentManager fragmentManager = ((FragmentActivity)mContext).getSupportFragmentManager();
+            // Opens PostDetailsFragment of relevant post when picture is clicked
             mBinding.ivPostPic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent i = new Intent(mContext, PostDetailsActivity.class);
-                    i.putExtra(POST, post);
-                    mContext.startActivity(i);
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.flContainer, new PostDetailsFragment(post))
+                            .addToBackStack(TAG)
+                            .commit();
                 }
             });
         }
