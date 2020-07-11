@@ -117,6 +117,7 @@ public class HomeFragment extends Fragment {
     }
 
     protected void queryPosts(final int page) {
+        mHomeBinding.tbProfile.getMenu().findItem(R.id.miActionProgress).setVisible(true);
         final ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
         query.addDescendingOrder(Post.KEY_CREATED);
@@ -135,6 +136,7 @@ public class HomeFragment extends Fragment {
                     mAdapter.addAll(posts);
                     mHomeBinding.swipeContainer.setRefreshing(false);
                 }
+                mHomeBinding.tbProfile.getMenu().findItem(R.id.miActionProgress).setVisible(false);
             }
         });
     }

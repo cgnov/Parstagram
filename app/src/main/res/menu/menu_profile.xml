@@ -5,14 +5,12 @@
     <item
         android:id="@+id/miActionProgress"
         android:title="@string/loading"
-        android:visible="false"
-        android:orderInCategory="100"
-        app:showAsAction="always"
-        app:actionLayout="@layout/action_view_progress" />
-
+        android:visible="true"
+        app:actionLayout="@layout/action_view_progress"
+        app:showAsAction="always" />
     <item
-        android:title="@string/log_out"
-        android:onClick="onLogOutButtonClicked"
         android:id="@+id/logOutButton"
+        android:onClick="onLogOutButtonClicked"
+        android:title="@string/log_out"
         app:showAsAction="ifRoom" />
 </menu>

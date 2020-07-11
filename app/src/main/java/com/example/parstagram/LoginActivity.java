@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
             mBinding.btnLogin.setVisibility(View.GONE);
         } else {
             // Get info for new account
-            final String username = mBinding.btnCancel.getText().toString();
+            final String username = mBinding.etUsername.getText().toString();
             final String password = mBinding.etPassword.getText().toString();
 
             if(username.isEmpty() || password.isEmpty()) {
